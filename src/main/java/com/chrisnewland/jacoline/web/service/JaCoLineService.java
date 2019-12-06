@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2018-2019 Chris Newland.
- * Licensed under https://github.com/chriswhocodes/VMOptionsExplorer/blob/master/LICENSE
+ * Copyright (c) 2019 Chris Newland.
+ * Licensed under https://github.com/chriswhocodes/JaCoLine/blob/master/LICENSE
  */
 package com.chrisnewland.jacoline.web.service;
 
-import com.chrisnewland.jacoline.commandline.CommandLineSwitchParser;
-import com.chrisnewland.jacoline.commandline.SwitchStatus;
+import com.chrisnewland.jacoline.core.CommandLineSwitchParser;
+import com.chrisnewland.jacoline.core.SwitchStatus;
 import com.chrisnewland.jacoline.report.ReportBuilder;
 import org.owasp.encoder.Encode;
 
@@ -13,10 +13,9 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.List;
 
-@Path("/") public class CommandLineService
+@Path("/") public class JaCoLineService
 {
 	private static final String DEFAULT_JDK = "JDK8";
 

@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 2018-2019 Chris Newland.
- * Licensed under https://github.com/chriswhocodes/VMOptionsExplorer/blob/master/LICENSE
+ * Copyright (c) 2019 Chris Newland.
+ * Licensed under https://github.com/chriswhocodes/JaCoLine/blob/master/LICENSE
  */
-package com.chrisnewland.jacoline.commandline;
+package com.chrisnewland.jacoline.core;
 
 import org.owasp.encoder.Encode;
 
-import static com.chrisnewland.jacoline.commandline.SwitchInfo.PREFIX_X;
+import static com.chrisnewland.jacoline.core.SwitchInfo.PREFIX_X;
 
 import java.util.Objects;
 

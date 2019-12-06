@@ -1,7 +1,11 @@
+/*
+ * Copyright (c) 2019 Chris Newland.
+ * Licensed under https://github.com/chriswhocodes/JaCoLine/blob/master/LICENSE
+ */
 package com.chrisnewland.jacoline.rule;
 
-import com.chrisnewland.jacoline.commandline.KeyValue;
-import com.chrisnewland.jacoline.commandline.SwitchStatus;
+import com.chrisnewland.jacoline.core.KeyValue;
+import com.chrisnewland.jacoline.core.SwitchStatus;
 
 import java.util.List;
 import java.util.regex.Matcher;

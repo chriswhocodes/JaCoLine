@@ -1,6 +1,10 @@
+/*
+ * Copyright (c) 2019 Chris Newland.
+ * Licensed under https://github.com/chriswhocodes/JaCoLine/blob/master/LICENSE
+ */
 package com.chrisnewland.jacoline.rule;
 
-import com.chrisnewland.jacoline.commandline.KeyValue;
+import com.chrisnewland.jacoline.core.KeyValue;
 
 import java.util.List;
 

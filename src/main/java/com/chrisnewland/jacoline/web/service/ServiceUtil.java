@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2018-2019 Chris Newland.
- * Licensed under https://github.com/chriswhocodes/VMOptionsExplorer/blob/master/LICENSE
+ * Copyright (c) 2019 Chris Newland.
+ * Licensed under https://github.com/chriswhocodes/JaCoLine/blob/master/LICENSE
  */
 package com.chrisnewland.jacoline.web.service;
 
-import com.chrisnewland.jacoline.commandline.CommandLineSwitchParser;
+import com.chrisnewland.jacoline.core.CommandLineSwitchParser;
 import com.chrisnewland.jacoline.dto.RequestDTO;
 import org.owasp.encoder.Encode;
 

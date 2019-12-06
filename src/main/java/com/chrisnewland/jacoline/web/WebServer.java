@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2018-2019 Chris Newland.
- * Licensed under https://github.com/chriswhocodes/VMOptionsExplorer/blob/master/LICENSE
+ * Copyright (c) 2019 Chris Newland.
+ * Licensed under https://github.com/chriswhocodes/JaCoLine/blob/master/LICENSE
  */
 package com.chrisnewland.jacoline.web;
 
@@ -41,7 +41,7 @@ public class WebServer
 
 		Path serialisedPath = Paths.get(args[2]);
 
-		CommandLineService.initialise(serialisedPath);
+		JaCoLineService.initialise(serialisedPath);
 
 		Path badWordsPath = Paths.get(args[3]);
 

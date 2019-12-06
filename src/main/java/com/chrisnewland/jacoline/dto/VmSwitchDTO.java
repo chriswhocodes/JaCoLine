@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2018-2019 Chris Newland.
- * Licensed under https://github.com/chriswhocodes/VMOptionsExplorer/blob/master/LICENSE
+ * Copyright (c) 2019 Chris Newland.
+ * Licensed under https://github.com/chriswhocodes/JaCoLine/blob/master/LICENSE
  */
 package com.chrisnewland.jacoline.dto;
 
-import com.chrisnewland.jacoline.commandline.KeyValue;
-import com.chrisnewland.jacoline.commandline.SwitchStatus;
+import com.chrisnewland.jacoline.core.KeyValue;
+import com.chrisnewland.jacoline.core.SwitchStatus;
 
 import java.sql.*;
 import java.util.ArrayList;
