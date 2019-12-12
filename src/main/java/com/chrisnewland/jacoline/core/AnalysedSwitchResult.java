@@ -8,51 +8,73 @@ public class AnalysedSwitchResult
 {
 	private KeyValue keyValue;
 
-	private String reportHTML;
-
-	private SwitchStatus status;
+	private SwitchStatus switchStatus;
 
 	private String analysis;
 
-	public String getReportHTML()
+	private String type;
+
+	private String description;
+
+	private String defaultValue;
+
+	public String getType()
 	{
-		return reportHTML;
+		return type;
 	}
 
-	public String getKeyValueHTML(String targetUrl, String id)
+	public void setType(String type)
 	{
-		StringBuilder builder = new StringBuilder();
-
-		builder.append("<div class=\"summary_switch ")
-			   .append(status.getCssClass())
-			   .append("\"><a href=\"")
-			   .append(targetUrl == null ? "" : targetUrl);
-
-		if (!id.isEmpty())
-		{
-			builder.append('#').append(id);
-		}
-
-		builder.append("\" title=\"").append(analysis).append("\"").append(">").append(keyValue.toStringForHTML()).append("</a></div> ");
-
-		return builder.toString();
+		this.type = type;
 	}
 
-	public AnalysedSwitchResult(KeyValue keyValue, String html, SwitchStatus status, String analysis)
+	public String getDescription()
 	{
-		this.keyValue = keyValue;
-		this.reportHTML = html;
-		this.status = status;
-		this.analysis = analysis;
+		return description;
 	}
 
-	public SwitchStatus getStatus()
+	public void setDescription(String description)
 	{
-		return status;
+		this.description = description;
+	}
+
+	public String getDefaultValue()
+	{
+		return defaultValue;
+	}
+
+	public void setDefaultValue(String defaultValue)
+	{
+		this.defaultValue = defaultValue;
+	}
+
+	public KeyValue getKeyValue()
+	{
+		return keyValue;
+	}
+
+	public SwitchStatus getSwitchStatus()
+	{
+		return switchStatus;
 	}
 
 	public String getAnalysis()
 	{
 		return analysis;
+	}
+
+	public void setKeyValue(KeyValue keyValue)
+	{
+		this.keyValue = keyValue;
+	}
+
+	public void setSwitchStatus(SwitchStatus status)
+	{
+		this.switchStatus = status;
+	}
+
+	public void setAnalysis(String analysis)
+	{
+		this.analysis = analysis;
 	}
 }

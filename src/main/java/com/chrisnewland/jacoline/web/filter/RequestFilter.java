@@ -5,7 +5,7 @@
 package com.chrisnewland.jacoline.web.filter;
 
 import com.chrisnewland.jacoline.core.CommandLineSwitchParser;
-import com.chrisnewland.jacoline.web.service.ServiceUtil;
+import com.chrisnewland.jacoline.web.service.form.FormServiceUtil;
 
 import org.glassfish.jersey.message.internal.MediaTypes;
 
@@ -129,7 +129,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED_TYPE;
 
 		try
 		{
-			errorPage = ServiceUtil.loadError();
+			errorPage = FormServiceUtil.loadError();
 		}
 		catch (IOException ioe)
 		{

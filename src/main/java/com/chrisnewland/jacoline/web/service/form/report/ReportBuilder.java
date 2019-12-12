@@ -2,14 +2,14 @@
  * Copyright (c) 2019 Chris Newland.
  * Licensed under https://github.com/chriswhocodes/JaCoLine/blob/master/LICENSE
  */
-package com.chrisnewland.jacoline.report;
+package com.chrisnewland.jacoline.web.service.form.report;
 
 import com.chrisnewland.jacoline.core.AnalysedSwitchResult;
 import com.chrisnewland.jacoline.core.CommandLineSwitchParser;
 import com.chrisnewland.jacoline.core.KeyValue;
 import com.chrisnewland.jacoline.core.SwitchStatus;
 import com.chrisnewland.jacoline.dto.DatabaseManager;
-import com.chrisnewland.jacoline.web.service.ServiceUtil;
+import com.chrisnewland.jacoline.web.service.form.FormServiceUtil;
 import org.owasp.encoder.Encode;
 
 import java.sql.*;
@@ -250,7 +250,7 @@ public class ReportBuilder
 			AnalysedSwitchResult result = CommandLineSwitchParser.getSwitchAnalysis(identity, jvm, index, parsedSwitches, os, arch,
 					unlockFlags);
 
-			builder.append(result.getKeyValueHTML("/retrieve/" + id, identity));
+			builder.append(FormServiceUtil.getSummarySwitchLink(result, "/retrieve/" + id, identity));
 		}
 
 		return builder.toString();
@@ -260,7 +260,7 @@ public class ReportBuilder
 	{
 		if (input != null)
 		{
-			input = input.replace(ServiceUtil.OPTION_ANY, "-");
+			input = input.replace(FormServiceUtil.OPTION_ANY, "-");
 		}
 
 		return Encode.forHtml(input);

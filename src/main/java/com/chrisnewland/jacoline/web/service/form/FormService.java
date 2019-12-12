@@ -2,12 +2,13 @@
  * Copyright (c) 2019 Chris Newland.
  * Licensed under https://github.com/chriswhocodes/JaCoLine/blob/master/LICENSE
  */
-package com.chrisnewland.jacoline.web.service;
+package com.chrisnewland.jacoline.web.service.form;
 
 import com.chrisnewland.jacoline.core.CommandLineSwitchParser;
+import com.chrisnewland.jacoline.core.JaCoLineRequest;
+import com.chrisnewland.jacoline.core.JaCoLineResponse;
 import com.chrisnewland.jacoline.core.SwitchStatus;
-import com.chrisnewland.jacoline.report.ReportBuilder;
-import org.owasp.encoder.Encode;
+import com.chrisnewland.jacoline.web.service.form.report.ReportBuilder;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -15,7 +16,7 @@ import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.util.List;
 
-@Path("/") public class JaCoLineService
+@Path("/") public class FormService
 {
 	private static final String DEFAULT_JDK = "JDK8";
 
@@ -23,17 +24,12 @@ import java.util.List;
 
 	private static String generatedStatsHTML = null;
 
-	public static void initialise(java.nio.file.Path serialisedPath) throws IOException
-	{
-		CommandLineSwitchParser.initialise(serialisedPath);
-	}
-
 	@GET @Path("inspect") @Produces(MediaType.TEXT_HTML) public String handleForm()
 	{
-		return ServiceUtil.buildForm(DEFAULT_JDK, "linux", "x86", false)
-						  .replace("%COMMAND%", ""/*Encode.forHtml(builder.toString())*/)
-						  .replace("%RESULT%", "")
-						  .replace("%STORED%", "");
+		return FormServiceUtil.buildForm(DEFAULT_JDK, "linux", "x86", false)
+							  .replace("%COMMAND%", "")
+							  .replace("%RESULT%", "")
+							  .replace("%STORED%", "");
 	}
 
 	@POST @Path("inspect") @Consumes(MediaType.APPLICATION_FORM_URLENCODED) @Produces(MediaType.TEXT_HTML) public String handleCommand(
@@ -44,28 +40,24 @@ import java.util.List;
 
 		try
 		{
-			String form = ServiceUtil.buildForm(jvm, os, arch, debugJVM);
-
-			command = command.replace("\n", " ").replace((char) 8209, '-');
-
 			boolean storeDTO = !command.contains("com.chrisnewland.someproject.SomeApplication");
 
-			String result = CommandLineSwitchParser.buildReport(command, jvm, os, arch, debugJVM, storeDTO);
+			JaCoLineRequest request = new JaCoLineRequest();
 
-			String storedMessage = "";
+			request.setCommand(command);
+			request.setJvm(jvm);
+			request.setOs(os);
+			request.setArch(arch);
+			request.setDebugJVM(debugJVM);
 
-			if (!storeDTO)
-			{
-				storedMessage = "Not updating statistics database when command line contains the example class 'com.chrisnewland.someproject.SomeApplication'";
-			}
-			else
+			JaCoLineResponse response = CommandLineSwitchParser.buildReport(request, storeDTO);
+
+			if (storeDTO)
 			{
 				statsCacheIsValid = false;
 			}
 
-			form = form.replace("%STORED%", storedMessage);
-
-			return form.replace("%COMMAND%", Encode.forHtml(command).replace("-", "&#8209;")).replace("%RESULT%", result);
+			return FormServiceUtil.renderHTML(response, storeDTO);
 		}
 		catch (Exception e)
 		{
@@ -76,14 +68,27 @@ import java.util.List;
 
 	@GET @Path("retrieve/{requestId}") @Produces(MediaType.TEXT_HTML) public String retrieve(@PathParam("requestId") long requestId)
 	{
-		return ServiceUtil.buildRetrievedRequest(requestId);
+		return FormServiceUtil.buildRetrievedRequest(requestId);
 	}
 
 	@GET @Path("about") @Produces(MediaType.TEXT_HTML) public String about()
 	{
 		try
 		{
-			return ServiceUtil.showAbout();
+			return FormServiceUtil.showAbout();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return "An error occurred! Tell @chriswhocodes!";
+		}
+	}
+
+	@GET @Path("api") @Produces(MediaType.TEXT_HTML) public String api()
+	{
+		try
+		{
+			return FormServiceUtil.showAPI();
 		}
 		catch (Exception e)
 		{
@@ -96,7 +101,7 @@ import java.util.List;
 	{
 		try
 		{
-			return ServiceUtil.showPrivacy();
+			return FormServiceUtil.showPrivacy();
 		}
 		catch (Exception e)
 		{
@@ -113,7 +118,7 @@ import java.util.List;
 		{
 			try
 			{
-				String template = ServiceUtil.loadStats();
+				String template = FormServiceUtil.loadStats();
 
 				StringBuilder builder = new StringBuilder();
 

@@ -1,0 +1,71 @@
+<h3>JaCoLine has a JSON/REST API for integration with your build system.</h3>
+<h4>API Endpoint</h4>
+<div class="api">
+    <pre>https://jacoline.dev/json/inspect
+</div></div>
+<h4>HTTP Headers</h4>
+<div class="api">
+    <pre>Content-Type: application/json</pre>
+</div>
+<h4>Example Request</h4>
+<div class="api"><pre>{
+    "jvm": "JDK8",
+    "os": "Linux",
+    "arch": "x86",
+    "command": "/usr/bin/java ‑Xmx8g ‑XX:+UseG1GC -XX:+KABOOM com.chrisnewland.someproject.SomeApplication",
+    "debugJVM":false
+}
+</div></div>
+<h4>Example Response</h4>
+<div class="api"><pre>{
+    "errorMessage": "OK",
+    "switchesIdentified": [
+        {
+            "keyValue": {
+                "prefix": "-X",
+                "key": "mx",
+                "value": "8g",
+                "keyWithPrefix": "-Xmx"
+            },
+            "switchStatus": "OK",
+            "analysis": "OK",
+            "type": "<size>",
+            "description": "set maximum Java heap size",
+            "defaultValue": ""
+        },
+        {
+            "keyValue": {
+                "prefix": "-XX:",
+                "key": "UseG1GC",
+                "value": "true",
+                "keyWithPrefix": "-XX:UseG1GC"
+            },
+            "switchStatus": "OK",
+            "analysis": "OK",
+            "type": "bool",
+            "description": "Use the Garbage-First garbage collector",
+            "defaultValue": "false"
+        },
+        {
+            "keyValue": {
+                "prefix": "-XX:",
+                "key": "KABOOM",
+                "value": "true",
+                "keyWithPrefix": "-XX:KABOOM"
+            },
+            "switchStatus": "ERROR",
+            "analysis": "Switch not found in any JDK",
+            "type": "",
+            "description": "",
+            "defaultValue": ""
+        }
+    ],
+    "request": {
+        "command": "/usr/bin/java -Xmx8g -XX:+UseG1GC -XX:+KABOOM com.chrisnewland.someproject.SomeApplication",
+        "jvm": "JDK8",
+        "os": "Linux",
+        "arch": "x86",
+        "debugJVM": false
+    }
+}</pre>
+</div>

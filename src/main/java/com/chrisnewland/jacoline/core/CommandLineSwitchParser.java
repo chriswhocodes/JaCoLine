@@ -8,9 +8,7 @@ import com.chrisnewland.jacoline.deserialiser.Deserialiser;
 import com.chrisnewland.jacoline.dto.RequestDTO;
 import com.chrisnewland.jacoline.rule.*;
 import com.chrisnewland.jacoline.spelling.DistanceCalculator;
-import com.chrisnewland.jacoline.web.service.ServiceUtil;
 import com.chrisnewland.jacoline.dto.VmSwitchDTO;
-import org.owasp.encoder.Encode;
 
 import static com.chrisnewland.jacoline.core.SwitchInfo.PREFIX_X;
 import static com.chrisnewland.jacoline.core.SwitchInfo.PREFIX_XX;
@@ -21,7 +19,7 @@ import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.*;
 
-import static com.chrisnewland.jacoline.web.service.ServiceUtil.OPTION_ANY;
+import static com.chrisnewland.jacoline.web.service.form.FormServiceUtil.OPTION_ANY;
 
 public class CommandLineSwitchParser
 {
@@ -204,13 +202,27 @@ public class CommandLineSwitchParser
 		return builder.toString();
 	}
 
-	public static String buildReport(String command, String jvm, String os, String arch, boolean debugJVM, boolean storeDTO)
+	public static JaCoLineResponse buildReport(JaCoLineRequest request)
 	{
+		return buildReport(request, true);
+	}
+
+	public static JaCoLineResponse buildReport(JaCoLineRequest request, boolean storeDTO)
+	{
+		String command = request.getCommand();
+		String jvm = request.getJvm();
+		String os = request.getOs();
+		String arch = request.getArch();
+		boolean debugJVM = request.isDebugJVM();
+
+		JaCoLineResponse response = JaCoLineResponse.createForRequest(request);
+
 		List<KeyValue> parsedSwitches = parse(command);
 
 		if (parsedSwitches.isEmpty())
 		{
-			return "<div class=\"error\">Error - I did not recognise any JVM switches in your command line.</div>";
+			response.setErrorMessage("Error - I did not recognise any JVM switches in your command line.");
+			return response;
 		}
 
 		RequestDTO requestDTO = new RequestDTO(getSanitisedRequestForDTO(parsedSwitches), jvm, os, arch, debugJVM);
@@ -231,28 +243,25 @@ public class CommandLineSwitchParser
 
 		int unlockFlags = getUnlockFlags(parsedSwitches, debugJVM);
 
-		StringBuilder summaryBuilder = new StringBuilder();
+		final int switchCount = parsedSwitches.size();
 
-		summaryBuilder.append("<div class=\"section_header\">Switches Identified</div>");
-		summaryBuilder.append("<div class=\"summary_container\">");
-
-		StringBuilder reportBuilder = new StringBuilder("<div class=\"section_header_nbm\">Switch Analysis</div>");
+		List<AnalysedSwitchResult> analysedSwitchResults = new ArrayList<>(switchCount);
 
 		int cssId = 0;
 
-		for (int index = 0; index < parsedSwitches.size(); index++)
+		for (int index = 0; index < switchCount; index++)
 		{
-			//System.out.println(keyValue);
-
 			String identity = "id" + cssId++;
 
 			AnalysedSwitchResult result = getSwitchAnalysis(identity, jvm, index, parsedSwitches, os, arch, unlockFlags);
+
+			analysedSwitchResults.add(result);
 
 			if (requestId != -1)
 			{
 				KeyValue keyValue = parsedSwitches.get(index);
 
-				VmSwitchDTO vmSwitchDTO = new VmSwitchDTO(requestId, keyValue, result.getStatus(), result.getAnalysis());
+				VmSwitchDTO vmSwitchDTO = new VmSwitchDTO(requestId, keyValue, result.getSwitchStatus(), result.getAnalysis());
 
 				try
 				{
@@ -266,24 +275,18 @@ public class CommandLineSwitchParser
 					sqle.printStackTrace();
 				}
 			}
-
-			summaryBuilder.append(result.getKeyValueHTML(null, identity));
-
-			reportBuilder.append(result.getReportHTML());
 		}
 
-		summaryBuilder.append("</div><div class=\"divclear\"></div>");
+		response.setSwitchesIdentified(analysedSwitchResults);
 
-		reportBuilder.insert(0, summaryBuilder.toString());
-
-		reportBuilder.insert(0, "<div class=\"section\">Results</div>");
-
-		return reportBuilder.toString();
+		return response;
 	}
 
 	public static List<KeyValue> parse(String commandLine)
 	{
 		List<String> parts = getParts(commandLine);
+
+		System.out.println("Request has " + parts.size() + " parts");
 
 		List<KeyValue> switches = new ArrayList<>();
 
@@ -456,15 +459,11 @@ public class CommandLineSwitchParser
 
 	private static String findEarliestJDKForSwitch(String switchName)
 	{
-		//System.out.println("finding earliest JDK for " + switchName);
-
 		String result = null;
 
-		for (Map.Entry<String, List<SwitchInfo>> entry : jdkSwitchMaps.entrySet())
+		for (String jdkName : getJDKList())
 		{
-			String jdkName = entry.getKey();
-
-			List<SwitchInfo> switchInfoList = entry.getValue();
+			List<SwitchInfo> switchInfoList = jdkSwitchMaps.get(jdkName);
 
 			if (switchFoundInList(switchName, switchInfoList))
 			{
@@ -493,24 +492,6 @@ public class CommandLineSwitchParser
 		}
 
 		return result;
-	}
-
-	private static String convertTypeName(String input)
-	{
-		switch (input)
-		{
-		case "intx":
-		case "uintx":
-			return "int";
-		case "ccstr":
-			return "string";
-		case "bool":
-			return "boolean";
-		case "ccstrlist":
-			return "list of strings";
-		default:
-			return input;
-		}
 	}
 
 	private static boolean switchFoundInList(String switchName, List<SwitchInfo> switchInfoList)
@@ -552,13 +533,15 @@ public class CommandLineSwitchParser
 		//================================================================
 		if (switchInfoList.isEmpty())
 		{
+			System.out.println(switchName + " not found in " + currentJDK);
+
 			inError = true;
 
 			switchStatus = SwitchStatus.ERROR;
 
 			String earliest = findEarliestJDKForSwitch(switchName);
 
-			//System.out.println("Found " + switchName + " in earliest " + earliest);
+			System.out.println("Found " + switchName + " in earliest " + earliest);
 
 			if (earliest != null)
 			{
@@ -730,6 +713,8 @@ public class CommandLineSwitchParser
 
 		if (!inError)
 		{
+			System.out.println("Applying RulesEngine");
+
 			List<SwitchRuleResult> ruleResults = rulesEngine.applyRules(keyValue, switches);
 
 			if (!ruleResults.isEmpty())
@@ -746,6 +731,9 @@ public class CommandLineSwitchParser
 
 					if (resultStatus.compareTo(switchStatus) > 0)
 					{
+						System.out.println("Updated SwitchStatus for " + keyValue.toString() + " from " + switchStatus + " to "
+								+ resultStatus);
+
 						switchStatus = resultStatus;
 					}
 				}
@@ -758,34 +746,14 @@ public class CommandLineSwitchParser
 	private static AnalysedSwitchResult buildResult(KeyValue keyValue, String cssId, SwitchStatus switchStatus, String switchName,
 			String type, String description, String defaultValue, String myValue, String analysis)
 	{
-		String html;
+		AnalysedSwitchResult result = new AnalysedSwitchResult();
 
-		try
-		{
-			html = ServiceUtil.loadCompareTemplate();
-		}
-		catch (IOException ioe)
-		{
-			throw new RuntimeException("Could not load template", ioe);
-		}
-
-		html = html.replace("%IDENTITY%", cssId);
-		html = html.replace("%STATUS_CLASS%", switchStatus.getCssClass());
-		html = html.replace("%NAME%", switchName);
-		html = html.replace("%TYPE%", Encode.forHtml(convertTypeName(type)));
-
-		description = description.replace("<br>", "\n");
-
-		description = Encode.forHtml(description);
-
-		description = description.replace("\n", "<br>");
-
-		html = html.replace("%DESCRIPTION%", description);
-		html = html.replace("%DEFAULT%", defaultValue);
-		html = html.replace("%VALUE%", Encode.forHtml(myValue));
-		html = html.replace("%ANALYSIS%", Encode.forHtml(analysis));
-
-		AnalysedSwitchResult result = new AnalysedSwitchResult(keyValue, html, switchStatus, analysis);
+		result.setKeyValue(keyValue);
+		result.setDefaultValue(defaultValue);
+		result.setDescription(description);
+		result.setAnalysis(analysis);
+		result.setType(type);
+		result.setSwitchStatus(switchStatus);
 
 		return result;
 	}

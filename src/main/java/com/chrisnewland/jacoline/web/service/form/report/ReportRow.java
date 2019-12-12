@@ -2,7 +2,7 @@
  * Copyright (c) 2019 Chris Newland.
  * Licensed under https://github.com/chriswhocodes/JaCoLine/blob/master/LICENSE
  */
-package com.chrisnewland.jacoline.report;
+package com.chrisnewland.jacoline.web.service.form.report;
 
 public class ReportRow
 {

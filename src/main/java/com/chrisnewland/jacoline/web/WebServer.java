@@ -4,10 +4,11 @@
  */
 package com.chrisnewland.jacoline.web;
 
+import com.chrisnewland.jacoline.core.CommandLineSwitchParser;
 import com.chrisnewland.jacoline.dto.DatabaseManager;
 import com.chrisnewland.jacoline.web.filter.RequestFilter;
-import com.chrisnewland.jacoline.web.service.*;
 
+import com.chrisnewland.jacoline.web.service.form.FormServiceUtil;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -31,7 +32,7 @@ public class WebServer
 
 		Path resourcesPath = Paths.get(args[0]);
 
-		ServiceUtil.initialise(resourcesPath);
+		FormServiceUtil.initialise(resourcesPath);
 
 		Path databasePropertiesPath = Paths.get(args[1]);
 
@@ -41,7 +42,7 @@ public class WebServer
 
 		Path serialisedPath = Paths.get(args[2]);
 
-		JaCoLineService.initialise(serialisedPath);
+		CommandLineSwitchParser.initialise(serialisedPath);
 
 		Path badWordsPath = Paths.get(args[3]);
 

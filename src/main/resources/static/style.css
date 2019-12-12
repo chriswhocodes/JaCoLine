@@ -323,3 +323,9 @@ li {
     margin-top: 8px;
     font-style: italic;
 }
+
+.api {
+    border: 1px solid #444444;
+    padding: 2px 8px;
+    background-color: lightgrey;
+}
