@@ -172,7 +172,7 @@ public class FormServiceUtil
 
 				JaCoLineResponse response = CommandLineSwitchParser.buildReport(request, false);
 
-				String resultHTML = renderHTML(response, false);
+				String resultHTML = renderHTML(response);
 
 				return template.replace("%REQUEST_DATE%", requestDTO.getRecordedAt().toString())
 							   .replace("%REQUEST_OS%", Encode.forHtml(requestDTO.getOs()))
@@ -192,16 +192,8 @@ public class FormServiceUtil
 		}
 	}
 
-	public static String renderHTML(JaCoLineResponse response, boolean storeDTO)
+	public static String renderHTML(JaCoLineResponse response)
 	{
-		JaCoLineRequest request = response.getRequest();
-
-		String jvm = request.getJvm();
-		String arch = request.getArch();
-		String command = request.getCommand();
-		String os = request.getOs();
-		boolean debugJVM = request.isDebugJVM();
-
 		StringBuilder reportBuilder = new StringBuilder();
 
 		if (response.getErrorMessage() != null)
@@ -236,19 +228,7 @@ public class FormServiceUtil
 
 		reportBuilder.insert(0, createTagWithClassAndContent("div", "section", "Results"));
 
-		String form = FormServiceUtil.buildForm(jvm, os, arch, debugJVM);
-
-		String storedMessage = "";
-
-		if (!storeDTO)
-		{
-			storedMessage = "Not updating statistics database when command line contains the example class 'com.chrisnewland.someproject.SomeApplication'";
-		}
-
-		form = form.replace("%STORED%", storedMessage);
-
-		return form.replace("%COMMAND%", Encode.forHtml(command).replace("-", "&#8209;"))
-				   .replace("%RESULT%", reportBuilder.toString());
+		return reportBuilder.toString();
 	}
 
 	private static String createOpenTagWithClass(String tagName, String classCSS)

@@ -9,6 +9,7 @@ import com.chrisnewland.jacoline.core.JaCoLineRequest;
 import com.chrisnewland.jacoline.core.JaCoLineResponse;
 import com.chrisnewland.jacoline.core.SwitchStatus;
 import com.chrisnewland.jacoline.web.service.form.report.ReportBuilder;
+import org.owasp.encoder.Encode;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -23,6 +24,11 @@ import java.util.List;
 	private static boolean statsCacheIsValid = false;
 
 	private static String generatedStatsHTML = null;
+
+	public static void invalidateStatsCache()
+	{
+		statsCacheIsValid = false;
+	}
 
 	@GET @Path("inspect") @Produces(MediaType.TEXT_HTML) public String handleForm()
 	{
@@ -57,7 +63,20 @@ import java.util.List;
 				statsCacheIsValid = false;
 			}
 
-			return FormServiceUtil.renderHTML(response, storeDTO);
+			String form = FormServiceUtil.buildForm(jvm, os, arch, debugJVM);
+
+			String storedMessage = "";
+
+			if (!storeDTO)
+			{
+				storedMessage = "Not updating statistics database when command line contains the example class 'com.chrisnewland.someproject.SomeApplication'";
+			}
+
+			form = form.replace("%STORED%", storedMessage)
+					   .replace("%COMMAND%", Encode.forHtml(command).replace("-", "&#8209;"))
+					   .replace("%RESULT%", FormServiceUtil.renderHTML(response));
+
+			return form;
 		}
 		catch (Exception e)
 		{

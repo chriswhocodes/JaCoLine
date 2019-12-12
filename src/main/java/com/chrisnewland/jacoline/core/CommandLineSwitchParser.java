@@ -9,6 +9,7 @@ import com.chrisnewland.jacoline.dto.RequestDTO;
 import com.chrisnewland.jacoline.rule.*;
 import com.chrisnewland.jacoline.spelling.DistanceCalculator;
 import com.chrisnewland.jacoline.dto.VmSwitchDTO;
+import com.chrisnewland.jacoline.web.service.form.FormService;
 
 import static com.chrisnewland.jacoline.core.SwitchInfo.PREFIX_X;
 import static com.chrisnewland.jacoline.core.SwitchInfo.PREFIX_XX;
@@ -232,6 +233,7 @@ public class CommandLineSwitchParser
 			if (storeDTO)
 			{
 				requestDTO.insert();
+				FormService.invalidateStatsCache();
 			}
 		}
 		catch (SQLException sqle)
