@@ -196,7 +196,7 @@ public class FormServiceUtil
 	{
 		StringBuilder reportBuilder = new StringBuilder();
 
-		if (response.getErrorMessage() != null)
+		if (!"OK".equals(response.getErrorMessage()))
 		{
 			reportBuilder.append(createTagWithClassAndContent("div", "error", response.getErrorMessage()));
 		}
