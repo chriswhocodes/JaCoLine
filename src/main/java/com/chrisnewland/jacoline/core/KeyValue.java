@@ -8,13 +8,24 @@ import org.owasp.encoder.Encode;
 
 import static com.chrisnewland.jacoline.core.SwitchInfo.PREFIX_X;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 public class KeyValue
 {
 	private String prefix;
 	private String key;
 	private String value;
+
+	private static final Set<String> NO_SEPARATOR = new HashSet<>();
+
+	static
+	{
+		NO_SEPARATOR.add("mx");
+		NO_SEPARATOR.add("ms");
+		NO_SEPARATOR.add("ss");
+	}
 
 	public KeyValue(String prefix, String key, String value)
 	{
@@ -76,7 +87,14 @@ public class KeyValue
 		}
 		else if (PREFIX_X.equals(prefix))
 		{
-			builder.append(key).append(value);
+			if (value == null || NO_SEPARATOR.contains(key))
+			{
+				builder.append(key).append(value);
+			}
+			else
+			{
+				builder.append(key).append(':').append(value);
+			}
 		}
 		else
 		{
@@ -95,5 +113,4 @@ public class KeyValue
 	{
 		return toStringForHTML();
 	}
-
 }

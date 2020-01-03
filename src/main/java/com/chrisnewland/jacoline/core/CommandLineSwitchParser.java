@@ -324,7 +324,7 @@ public class CommandLineSwitchParser
 		return null;
 	}
 
-	private static KeyValue parseSwitch(String part)
+	protected static KeyValue parseSwitch(String part)
 	{
 		String prefix = getSwitchPrefix(part);
 
@@ -339,26 +339,27 @@ public class CommandLineSwitchParser
 
 		int equalsPos = part.indexOf('=');
 
+		int colonPos = part.indexOf(':');
+
+		int splitPos = -1;
+
+		if (equalsPos != -1)
+		{
+			splitPos = equalsPos;
+		}
+
+		if (colonPos != -1 && colonPos < equalsPos)
+		{
+			splitPos = colonPos;
+		}
+
 		KeyValue keyValue = null;
 
-		if (PREFIX_X.equals(prefix) && part.startsWith("log") && !part.startsWith("loggc"))
+		if (splitPos != -1)
 		{
-			String key = "log";
+			String key = part.substring(0, splitPos);
 
-			String value = "";
-
-			if (part.length() > key.length())
-			{
-				value = part.substring(key.length());
-			}
-
-			keyValue = new KeyValue(prefix, key, value);
-		}
-		else if (equalsPos != -1)
-		{
-			String key = part.substring(0, equalsPos);
-
-			String value = part.substring(equalsPos + 1);
+			String value = part.substring(splitPos + 1);
 
 			keyValue = new KeyValue(prefix, key, value);
 		}
