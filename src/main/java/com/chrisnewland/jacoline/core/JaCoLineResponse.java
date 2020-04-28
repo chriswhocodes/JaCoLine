@@ -1,12 +1,13 @@
 package com.chrisnewland.jacoline.core;
 
+import java.util.Collections;
 import java.util.List;
 
 public class JaCoLineResponse
 {
 	private String errorMessage = "OK";
 
-	private List<AnalysedSwitchResult> switchesIdentified;
+	private List<AnalysedSwitchResult> switchesIdentified = Collections.emptyList();
 
 	private JaCoLineRequest request;
 
