@@ -22,6 +22,8 @@ import java.nio.file.Paths;
 
 public class WebServer
 {
+	private static Path serialisedPath;
+
 	public static void main(String[] args) throws Exception
 	{
 		if (args.length != 4)
@@ -40,7 +42,7 @@ public class WebServer
 
 		ResourceConfig config = new ResourceConfig();
 
-		Path serialisedPath = Paths.get(args[2]);
+		serialisedPath = Paths.get(args[2]);
 
 		CommandLineSwitchParser.initialise(serialisedPath);
 
@@ -87,5 +89,10 @@ public class WebServer
 		{
 			server.destroy();
 		}
+	}
+
+	public static Path getSerialisedPath()
+	{
+		return serialisedPath;
 	}
 }

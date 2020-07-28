@@ -1,8 +1,10 @@
 /*
- * Copyright (c) 2019 Chris Newland.
- * Licensed under https://github.com/chriswhocodes/JaCoLine/blob/master/LICENSE
+ * Copyright (c) 2018-2020 Chris Newland.
+ * Licensed under https://github.com/chriswhocodes/VMOptionsExplorer/blob/master/LICENSE
  */
 package com.chrisnewland.jacoline.core;
+
+import org.json.JSONObject;
 
 import java.util.Objects;
 
@@ -27,75 +29,48 @@ public class SwitchInfo implements Comparable<SwitchInfo>
 	private String range;
 	private String deprecation;
 
-	private static final String SEP = "=-=-=";
-
-	private static final String LF = "\n";
-	private static final String ESCAPED_LF = "\\n";
-
-	private static final String EMPTY_STRING = "";
-
 	public String serialise()
 	{
-		StringBuilder builder = new StringBuilder();
+		JSONObject jsonObject = new JSONObject();
 
-		addToBuilder(builder, prefix);
-		addToBuilder(builder, name);
-		addToBuilder(builder, type);
-		addToBuilder(builder, os);
-		addToBuilder(builder, cpu);
-		addToBuilder(builder, component);
-		addToBuilder(builder, defaultValue);
-		addToBuilder(builder, availability);
-		addToBuilder(builder, description);
-		addToBuilder(builder, comment);
-		addToBuilder(builder, definedIn);
-		addToBuilder(builder, since);
-		addToBuilder(builder, range);
-		addToBuilder(builder, deprecation);
+		jsonObject.put("prefix", prefix);
+		jsonObject.put("name", name);
+		jsonObject.put("type", type);
+		jsonObject.put("os", os);
+		jsonObject.put("cpu", cpu);
+		jsonObject.put("component", component);
+		jsonObject.put("defaultValue", defaultValue);
+		jsonObject.put("availability", availability);
+		jsonObject.put("description", description);
+		jsonObject.put("comment", comment);
+		jsonObject.put("definedIn", definedIn);
+		jsonObject.put("since", since);
+		jsonObject.put("range", range);
+		jsonObject.put("deprecation", deprecation);
 
-		return builder.toString();
+		return jsonObject.toString();
 	}
 
-	private void addToBuilder(StringBuilder builder, String value)
+	public static SwitchInfo deserialise(JSONObject jsonObject)
 	{
-		if (value == null)
-		{
-			value = EMPTY_STRING;
-		}
+		String prefix = jsonObject.getString("prefix");
 
-		value = value.replace(LF, ESCAPED_LF);
-		builder.append(value).append(SEP);
-	}
-
-	private static String read(String input)
-	{
-		return input.replace(ESCAPED_LF, LF);
-	}
-
-	public static SwitchInfo deserialise(String line)
-	{
-		String[] parts = line.split(SEP, -1);
-
-		int pos = 0;
-
-		String prefix = read(parts[pos++]);
-
-		String name = read(parts[pos++]);
+		String name = jsonObject.getString("name");
 
 		SwitchInfo switchInfo = new SwitchInfo(prefix, name);
 
-		switchInfo.setType(read(parts[pos++]));
-		switchInfo.setOs(read(parts[pos++]));
-		switchInfo.setCpu(read(parts[pos++]));
-		switchInfo.setComponent(read(parts[pos++]));
-		switchInfo.setDefaultValue(read(parts[pos++]));
-		switchInfo.setAvailability(read(parts[pos++]));
-		switchInfo.setDescription(read(parts[pos++]));
-		switchInfo.setComment(read(parts[pos++]));
-		switchInfo.setDefinedIn(read(parts[pos++]));
-		switchInfo.setSince(read(parts[pos++]));
-		switchInfo.setRange(read(parts[pos++]));
-		switchInfo.setDeprecation(read(parts[pos++]));
+		switchInfo.setType(jsonObject.optString("type", null));
+		switchInfo.setOs(jsonObject.optString("os", null));
+		switchInfo.setCpu(jsonObject.optString("cpu", null));
+		switchInfo.setComponent(jsonObject.optString("component", null));
+		switchInfo.setDefaultValue(jsonObject.optString("defaultValue", null));
+		switchInfo.setAvailability(jsonObject.optString("availability", null));
+		switchInfo.setDescription(jsonObject.optString("description", null));
+		switchInfo.setComment(jsonObject.optString("comment", null));
+		switchInfo.setDefinedIn(jsonObject.optString("definedIn", null));
+		switchInfo.setSince(jsonObject.optString("since", null));
+		switchInfo.setRange(jsonObject.optString("range", null));
+		switchInfo.setDeprecation(jsonObject.optString("deprecation", null));
 
 		return switchInfo;
 	}
@@ -281,12 +256,12 @@ public class SwitchInfo implements Comparable<SwitchInfo>
 			builder.append("<th>").append("Default").append("</th>");
 		}
 
-		if (vmType == VMType.HOTSPOT || vmType == VMType.GRAAL_NATIVE)
+		if (vmType == VMType.HOTSPOT || vmType == VMType.GRAAL_NATIVE_8 || vmType == VMType.GRAAL_NATIVE_11)
 		{
 			builder.append("<th>").append("Availability").append("</th>");
 		}
 
-		if (vmType != VMType.ZING)
+		if (vmType != VMType.ZING && vmType != VMType.ZULU)
 		{
 			builder.append("<th>").append("Description").append("</th>");
 		}
@@ -317,7 +292,7 @@ public class SwitchInfo implements Comparable<SwitchInfo>
 
 		if (vmType != VMType.OPENJ9)
 		{
-			builder.append(getRow(type));
+			builder.append(getRow(escapeHTMLEntities(type)));
 		}
 
 		if (vmType == VMType.HOTSPOT)
@@ -339,12 +314,12 @@ public class SwitchInfo implements Comparable<SwitchInfo>
 			}
 		}
 
-		if (vmType == VMType.HOTSPOT || vmType == VMType.GRAAL_NATIVE)
+		if (vmType == VMType.HOTSPOT || vmType == VMType.GRAAL_NATIVE_8 || vmType == VMType.GRAAL_NATIVE_11)
 		{
 			builder.append(getRow(availability));
 		}
 
-		if (vmType != VMType.ZING)
+		if (vmType != VMType.ZING && vmType != VMType.ZULU)
 		{
 			String descriptionComment = "";
 
@@ -376,6 +351,11 @@ public class SwitchInfo implements Comparable<SwitchInfo>
 
 	public static String escapeHTMLEntities(String raw)
 	{
+		if (raw == null)
+		{
+			return "";
+		}
+
 		return raw.toString()
 				  .replace("<br>", "SAFE_BR")
 				  .replace("<pre>", "SAFE_PRE_OPEN")

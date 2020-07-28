@@ -64,8 +64,10 @@ public class CommandLineSwitchParser
 		{
 			String jdkName = switchInfoFile.getName();
 
-			if (jdkName.startsWith("JDK"))
+			if (jdkName.startsWith("JDK") && jdkName.endsWith(".json") && !jdkName.contains("diffs"))
 			{
+				jdkName = jdkName.substring(0, jdkName.length() - 5);
+
 				List<SwitchInfo> switchInfoList = Deserialiser.deserialise(switchInfoFile.toPath());
 
 				for (SwitchInfo switchInfo : switchInfoList)

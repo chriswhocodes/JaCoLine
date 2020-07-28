@@ -5,6 +5,8 @@
 package com.chrisnewland.jacoline.deserialiser;
 
 import com.chrisnewland.jacoline.core.SwitchInfo;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -17,13 +19,17 @@ public class Deserialiser
 {
 	public static List<SwitchInfo> deserialise(Path pathToSerialisedSwitchInfo) throws IOException
 	{
-		List<String> lines = Files.readAllLines(pathToSerialisedSwitchInfo, StandardCharsets.UTF_8);
+		System.out.println("Deserialising " + pathToSerialisedSwitchInfo);
 
-		List<SwitchInfo> result = new ArrayList<>(lines.size());
+		JSONObject jsonObject = new JSONObject(new String(Files.readAllBytes(pathToSerialisedSwitchInfo), StandardCharsets.UTF_8));
 
-		for (String line : lines)
+		JSONArray jsonArray = jsonObject.getJSONArray("switches");
+
+		List<SwitchInfo> result = new ArrayList<>();
+
+		for (int i = 0; i < jsonArray.length(); i++)
 		{
-			SwitchInfo switchInfo = SwitchInfo.deserialise(line);
+			SwitchInfo switchInfo = SwitchInfo.deserialise(jsonArray.getJSONObject(i));
 
 			result.add(switchInfo);
 		}
