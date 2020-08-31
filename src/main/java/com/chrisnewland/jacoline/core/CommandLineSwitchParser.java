@@ -586,10 +586,11 @@ public class CommandLineSwitchParser
 		}
 
 		//================================================================
-		SwitchInfo firstDefinedSwitchInfo = switchInfoList.get(0);
+		SwitchInfo firstDefinedSwitchInfo = null;
 
 		if (!inError)
 		{
+			firstDefinedSwitchInfo = switchInfoList.get(0);
 
 			String correctPrefix = firstDefinedSwitchInfo.getPrefix();
 
