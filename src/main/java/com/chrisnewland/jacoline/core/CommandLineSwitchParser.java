@@ -379,7 +379,7 @@ public class CommandLineSwitchParser
 
 			keyValue = new KeyValue(prefix, key, value);
 		}
-		else
+		else if (PREFIX_X.equals(prefix))
 		{
 			// Xmx512m ?
 
@@ -411,6 +411,10 @@ public class CommandLineSwitchParser
 			String value = valueBuilder.toString();
 
 			keyValue = new KeyValue(prefix, key, value);
+		}
+		else
+		{
+			keyValue = new KeyValue(prefix, part, "");
 		}
 
 		return keyValue;
@@ -582,9 +586,10 @@ public class CommandLineSwitchParser
 		}
 
 		//================================================================
+		SwitchInfo firstDefinedSwitchInfo = switchInfoList.get(0);
+
 		if (!inError)
 		{
-			SwitchInfo firstDefinedSwitchInfo = switchInfoList.get(0);
 
 			String correctPrefix = firstDefinedSwitchInfo.getPrefix();
 
@@ -651,6 +656,7 @@ public class CommandLineSwitchParser
 		if (!inError)
 		{
 			rulesEngine.addRule(new RuleDetectDuplicatesAfterSwitch(index));
+			rulesEngine.addRule(new RuleBooleanParameterHasPlusMinus(firstDefinedSwitchInfo));
 		}
 		//================================================================
 
@@ -730,6 +736,10 @@ public class CommandLineSwitchParser
 
 				for (SwitchRuleResult ruleResult : ruleResults)
 				{
+					if (!empty.equalsIgnoreCase(analysis))
+					{
+						analysis += " ";
+					}
 					analysis += ruleResult.getMessage();
 
 					SwitchStatus resultStatus = ruleResult.getSwitchStatus();

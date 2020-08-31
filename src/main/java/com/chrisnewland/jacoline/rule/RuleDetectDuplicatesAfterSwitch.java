@@ -30,7 +30,7 @@ public class RuleDetectDuplicatesAfterSwitch extends AbstractSwitchRule
 
 				if (keyValue.getKeyWithPrefix().equals(laterKeyValue.getKeyWithPrefix()))
 				{
-					result = new SwitchRuleResult(SwitchStatus.WARNING,"Duplicate switch. This is overridden by " + laterKeyValue.toStringForHTML());
+					result = new SwitchRuleResult(SwitchStatus.WARNING,"Duplicate switch. This is overridden by " + laterKeyValue.toStringForHTML() +".");
 				}
 			}
 		}

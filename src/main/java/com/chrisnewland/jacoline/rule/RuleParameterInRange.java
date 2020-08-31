@@ -33,7 +33,7 @@ public class RuleParameterInRange extends AbstractSwitchRule
 		}
 		else
 		{
-			result = new SwitchRuleResult(SwitchStatus.ERROR, "Value " + value + " outside allowed " + range);
+			result = new SwitchRuleResult(SwitchStatus.ERROR, "Value " + value + " outside allowed " + range + ".");
 		}
 
 		return result;

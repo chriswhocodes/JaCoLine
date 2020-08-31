@@ -38,7 +38,7 @@ public class RuleXmsNotGreaterThanXmx extends AbstractSwitchRule
 
 				if (ms > mx)
 				{
-					result = new SwitchRuleResult(SwitchStatus.ERROR, "Xmx must be >= Xms");
+					result = new SwitchRuleResult(SwitchStatus.ERROR, "Xmx must be >= Xms.");
 				}
 			}
 		}

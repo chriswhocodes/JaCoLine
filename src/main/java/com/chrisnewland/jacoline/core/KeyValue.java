@@ -18,6 +18,8 @@ public class KeyValue
 	private String key;
 	private String value;
 
+	private boolean isBooleanSwitch = false;
+
 	private static final Set<String> NO_SEPARATOR = new HashSet<>();
 
 	static
@@ -34,6 +36,11 @@ public class KeyValue
 		this.value = value;
 
 		System.out.println("Creating KeyValue (" + prefix + "," + key + "," + value + ")");
+	}
+
+	public void setIsBooleanSwitch()
+	{
+		this.isBooleanSwitch = true;
 	}
 
 	public String getPrefix()
@@ -95,6 +102,10 @@ public class KeyValue
 			{
 				builder.append(key).append(':').append(value);
 			}
+		}
+		else if (isBooleanSwitch)
+		{
+			builder.append(key);
 		}
 		else
 		{
