@@ -318,6 +318,11 @@ public class FormServiceUtil
 
 	private static String convertTypeName(String input)
 	{
+		if (input == null)
+		{
+			return "";
+		}
+
 		switch (input)
 		{
 		case "intx":

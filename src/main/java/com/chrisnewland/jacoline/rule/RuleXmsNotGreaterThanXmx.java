@@ -13,7 +13,8 @@ import static com.chrisnewland.jacoline.core.SwitchInfo.PREFIX_X;
 
 public class RuleXmsNotGreaterThanXmx extends AbstractSwitchRule
 {
-	@Override public SwitchRuleResult apply(KeyValue keyValue, List<KeyValue> keyValueList)
+	@Override
+	public SwitchRuleResult apply(KeyValue keyValue, List<KeyValue> keyValueList)
 	{
 		String keyXms = PREFIX_X + "ms";
 
@@ -27,7 +28,8 @@ public class RuleXmsNotGreaterThanXmx extends AbstractSwitchRule
 
 			KeyValue keyValueXmx = getLastOccurrence(PREFIX_X + "mx", keyValueList);
 
-			if (keyValueXms != null && keyValueXmx != null)
+			if (keyValueXms != null && keyValueXmx != null && !isEnvironmentVariable(keyValueXms.getValue())
+					&& !isEnvironmentVariable(keyValueXmx.getValue()))
 			{
 				long ms = parseSize(keyValueXms.getValue());
 				long mx = parseSize(keyValueXmx.getValue());

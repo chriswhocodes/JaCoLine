@@ -35,6 +35,19 @@ public abstract class AbstractSwitchRule implements ISwitchRule
 		return result;
 	}
 
+	protected boolean isEnvironmentVariable(String value)
+	{
+		Pattern patternEnvironmentUnix = Pattern.compile("^\\$\\{(.*)\\}$");
+
+		Pattern patternEnvironmentWindows = Pattern.compile("^%(.*)%$");
+
+		boolean result = patternEnvironmentUnix.matcher(value)
+											   .find() || patternEnvironmentWindows.matcher(value)
+																				   .find();
+
+		return result;
+	}
+
 	protected long parseSize(String value)
 	{
 		long result = -1;
@@ -49,11 +62,13 @@ public abstract class AbstractSwitchRule implements ISwitchRule
 
 			if (matcher.groupCount() == 2)
 			{
-				String sizeSuffix = matcher.group(2).trim();
+				String sizeSuffix = matcher.group(2)
+										   .trim();
 
 				if (sizeSuffix.length() == 1)
 				{
-					char suffixChar = sizeSuffix.toLowerCase().charAt(0);
+					char suffixChar = sizeSuffix.toLowerCase()
+												.charAt(0);
 
 					switch (suffixChar)
 					{

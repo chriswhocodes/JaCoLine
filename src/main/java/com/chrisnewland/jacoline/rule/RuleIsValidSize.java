@@ -32,6 +32,11 @@ public class RuleIsValidSize extends AbstractSwitchRule
 
 	private boolean isValidSize(String value)
 	{
+		if (isEnvironmentVariable(value))
+		{
+			return true;
+		}
+
 		boolean result = false;
 
 		Pattern patternSize = Pattern.compile("^([0-9]+)(.*)");
