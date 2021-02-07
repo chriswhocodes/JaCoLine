@@ -33,8 +33,15 @@ public class JaCoLineRequest
 		return jvm;
 	}
 
+	//UPDATE request SET jvm = replace(jvm, 'JDK', 'OpenJDK');
+
 	public void setJvm(String jvm)
 	{
+		if (jvm != null && jvm.startsWith("JDK"))
+		{
+			jvm = "OpenJDK" + jvm.substring(3);
+		}
+
 		this.jvm = jvm;
 	}
 
