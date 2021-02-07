@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Chris Newland.
+ * Copyright (c) 2019-2021 Chris Newland.
  * Licensed under https://github.com/chriswhocodes/JaCoLine/blob/master/LICENSE
  */
 package com.chrisnewland.jacoline.web.service.form;
@@ -19,7 +19,7 @@ import java.util.List;
 
 @Path("/") public class FormService
 {
-	private static final String DEFAULT_JDK = "JDK8";
+	private static final String DEFAULT_JDK = "OpenJDK8";
 
 	private static boolean statsCacheIsValid = false;
 

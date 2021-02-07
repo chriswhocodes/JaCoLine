@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2019-2021 Chris Newland.
+ * Licensed under https://github.com/chriswhocodes/JaCoLine/blob/master/LICENSE
+ */
 package com.chrisnewland.jacoline.core;
 
 public class JaCoLineRequest

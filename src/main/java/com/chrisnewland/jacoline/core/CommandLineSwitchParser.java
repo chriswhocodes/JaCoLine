@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Chris Newland.
+ * Copyright (c) 2019-2021 Chris Newland.
  * Licensed under https://github.com/chriswhocodes/JaCoLine/blob/master/LICENSE
  */
 package com.chrisnewland.jacoline.core;
@@ -64,7 +64,9 @@ public class CommandLineSwitchParser
 		{
 			String jdkName = switchInfoFile.getName();
 
-			if (jdkName.startsWith("JDK") && jdkName.endsWith(".json") && !jdkName.contains("diffs"))
+			System.out.println("Checking " + jdkName);
+
+			if (jdkName.startsWith("OpenJDK") && jdkName.endsWith(".json"))
 			{
 				jdkName = jdkName.substring(0, jdkName.length() - 5);
 
@@ -642,14 +644,14 @@ public class CommandLineSwitchParser
 		//================================================================
 		if (!inError)
 		{
-			String deprecation = getDeprecation(switchInfoList, currentJDK);
+			String deprecationString = getDeprecationString(switchInfoList);
 
-			if (!emptyOrNull(deprecation))
+			if (!emptyOrNull(deprecationString))
 			{
 				switchStatus = SwitchStatus.WARNING;
 				inError = true;
 
-				analysis = "This switch will be removed in the future. It will be " + deprecation.replace("<br>", ", ") + ".";
+				analysis = "This switch will be removed in the future. It will be " + deprecationString;
 			}
 		}
 
@@ -776,8 +778,8 @@ public class CommandLineSwitchParser
 
 	private static int compareToJDKVersion(String first, String second)
 	{
-		first = first.replace("JDK", "");
-		second = second.replace("JDK", "");
+		first = first.replace("OpenJDK", "");
+		second = second.replace("OpenJDK", "");
 
 		int result = 0;
 
@@ -1001,25 +1003,26 @@ public class CommandLineSwitchParser
 		return availability;
 	}
 
-	private static String getDeprecation(List<SwitchInfo> switchInfoList, String currentJDK)
+	private static String getDeprecationString(List<SwitchInfo> switchInfoList)
 	{
-		String deprecation = null;
+		StringBuilder builder = new StringBuilder();
 
 		for (SwitchInfo switchInfo : switchInfoList)
 		{
-			deprecation = switchInfo.getDeprecation();
-
-			if (!emptyOrNull(deprecation))
+			if (!emptyOrNull(switchInfo.getDeprecated()))
 			{
-				break;
+				builder.append("Deprecated in OpenJDK").append(switchInfo.getDeprecated()).append(". ");
+			}
+			if (!emptyOrNull(switchInfo.getObsoleted()))
+			{
+				builder.append("Obsoleted in OpenJDK").append(switchInfo.getObsoleted()).append(". ");
+			}
+			if (!emptyOrNull(switchInfo.getExpired()))
+			{
+				builder.append("Expired in OpenJDK").append(switchInfo.getExpired()).append(".");
 			}
 		}
 
-		if (deprecation != null)
-		{
-			deprecation = deprecation.replace("<span style=\"white-space:nowrap\">", "").replace("</span>", "");
-		}
-
-		return deprecation;
+		return builder.toString();
 	}
 }
